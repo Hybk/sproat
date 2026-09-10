@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { WaitlistButton } from "@/components/WaitlistButton";
+
 const navLinks = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Two lenses", href: "#two-lenses" },
@@ -42,12 +44,7 @@ export function Header() {
           </nav>
         </div>
 
-        <Link
-          href="#waitlist"
-          className="inline-flex h-11 shrink-0 items-center rounded-full bg-white px-6 text-base font-semibold text-[#1C1C1C] transition-colors hover:bg-white/90 md:h-[50px] md:px-9 md:text-lg"
-        >
-          Join the waitlist
-        </Link>
+        <WaitlistButton />
       </div>
     </header>
   );
