@@ -5,11 +5,20 @@ type Props = {
   reveal: "sweep" | "radial";
   angle?: number;
   className?: string;
+  animTag?: string;
+  uid: string;
 };
 
-export function Doodle({ name, reveal, angle = 0, className }: Props) {
+export function Doodle({
+  name,
+  reveal,
+  angle = 0,
+  className,
+  animTag,
+  uid,
+}: Props) {
   const art = doodleArt[name];
-  const maskId = `doodle-mask-${name}`;
+  const maskId = `doodle-mask-${uid}-${name}`;
   const cx = art.width / 2;
   const cy = art.height / 2;
   const span = Math.hypot(art.width, art.height);
@@ -22,7 +31,7 @@ export function Doodle({ name, reveal, angle = 0, className }: Props) {
       aria-hidden
       focusable="false"
       data-doodle={name}
-      data-anim="doodle"
+      data-anim={animTag}
       className={className}
     >
       <defs>
