@@ -9,7 +9,12 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 const LABEL = "Join the waitlist";
 const CREST = 10;
 
-export function WaitlistButton() {
+const SIZES = {
+  sm: "h-11 px-6 text-base md:h-[50px] md:px-9 md:text-lg",
+  lg: "h-14 px-8 text-lg",
+};
+
+export function WaitlistButton({ size = "sm" }: { size?: keyof typeof SIZES }) {
   const root = useRef<HTMLAnchorElement>(null);
   const liquid = useRef<HTMLSpanElement>(null);
   const label = useRef<HTMLSpanElement>(null);
@@ -59,7 +64,7 @@ export function WaitlistButton() {
       onMouseLeave={drain}
       onFocus={rise}
       onBlur={drain}
-      className="relative isolate inline-flex h-11 shrink-0 items-center overflow-hidden rounded-full bg-white px-6 text-base font-semibold text-[#1C1C1C] md:h-[50px] md:px-9 md:text-lg"
+      className={`relative isolate inline-flex shrink-0 items-center overflow-hidden rounded-full bg-white font-semibold text-[#1C1C1C] ${SIZES[size]}`}
     >
       <span className="relative z-0">{LABEL}</span>
 

@@ -2,6 +2,14 @@
 @import "lenis/dist/lenis.css";
 
 @font-face {
+  font-family: "Shooting Star";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/Shooting%20Star.ttf") format("truetype");
+}
+
+@font-face {
   font-family: "Manrope";
   font-style: normal;
   font-weight: 200 800;
