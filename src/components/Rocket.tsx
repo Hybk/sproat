@@ -36,25 +36,12 @@ export function Rocket({
         const path = byIndex.get(i);
         if (!path) return null;
 
-        // Already a stroke in the artwork — draw it directly.
-        if ("sw" in path) {
-          return (
-            <path
-              key={i}
-              data-rocket-part={step}
-              d={path.d}
-              fill="none"
-              stroke={path.c}
-              strokeWidth={path.sw}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          );
-        }
-
-        // Outlined brush stroke: paint Figma's exact shape, clipped to a pen
-        // travelling along it, so only the order is derived — never the edges.
         const maskId = `rocket-pen-${i}`;
+        const stroked = "sw" in path;
+
+        // Every path is Figma's own artwork, revealed through a pen travelling
+        // along it. Only the pen carries the dash — and it lives inside a mask,
+        // so it can never paint a cap or an endpoint onto the page.
         return (
           <g key={i}>
             <mask
@@ -66,19 +53,23 @@ export function Rocket({
               height={vh * 3}
             >
               <path
-                data-rocket-part={step}
+                data-rocket-pen={step}
                 d={path.pen}
                 fill="none"
                 stroke="white"
                 strokeWidth={path.pw}
-                strokeLinecap="round"
+                strokeLinecap="butt"
                 strokeLinejoin="round"
               />
             </mask>
             <path
               data-rocket-fill
               d={path.d}
-              fill={path.c}
+              fill={stroked ? "none" : path.c}
+              stroke={stroked ? path.c : undefined}
+              strokeWidth={stroked ? path.sw : undefined}
+              strokeLinecap={stroked ? "round" : undefined}
+              strokeLinejoin={stroked ? "round" : undefined}
               mask={`url(#${maskId})`}
             />
           </g>

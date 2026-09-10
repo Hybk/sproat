@@ -15,11 +15,11 @@ export function initHowItWorks(track: HTMLElement) {
   const pinWrap = track.querySelector<HTMLElement>("[data-pin-wrap]");
   const rocketRun = track.querySelector<HTMLElement>("[data-rocket-run]");
   const section = track.querySelector<HTMLElement>("[data-hiw-pending]");
-  const strokes = Array.from(
-    track.querySelectorAll<SVGPathElement>("[data-rocket-part]"),
+  const pens = Array.from(
+    track.querySelectorAll<SVGPathElement>("[data-rocket-pen]"),
   );
 
-  if (!anchor || !slot || !phone || !pinWrap || !rocketRun || !strokes.length) {
+  if (!anchor || !slot || !phone || !pinWrap || !rocketRun || !pens.length) {
     return () => {};
   }
 
@@ -122,15 +122,40 @@ export function initHowItWorks(track: HTMLElement) {
     onLeaveBack: () => headline.reverse(),
   });
 
-  // Drawn stroke by stroke in pen order, the way you would sketch it. Runs from
-  // the point the unpinned heading has scrolled clear to the end of the track,
-  // which is exactly when the sticky rocket + phone stop sticking.
-  strokes.forEach((path) => {
-    const len = path.getTotalLength();
-    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+  // Only the pens carry the dash, and every pen lives inside a mask, so no
+  // dash cap or endpoint can ever paint onto the page. Runs from the point the
+  // unpinned heading has scrolled clear to the end of the track, which is
+  // exactly when the sticky rocket + phone stop sticking.
+  pens.forEach((pen) => {
+    const len = pen.getTotalLength();
+    gsap.set(pen, { strokeDasharray: len, strokeDashoffset: len });
   });
 
+  // A pen only approximates the very tips of its stroke, so once a stroke is
+  // fully down its mask comes off and Figma's path shows untouched. Driven off
+  // the timeline each frame rather than onComplete, which scrubbing can skip.
+  const fills = pens.map(
+    (pen) =>
+      pen.closest("g")?.querySelector<SVGPathElement>("[data-rocket-fill]") ??
+      null,
+  );
+  const maskRefs = fills.map((fill) => fill?.getAttribute("mask") ?? null);
+
+  const syncMasks = () => {
+    pens.forEach((pen, i) => {
+      const fill = fills[i];
+      const maskRef = maskRefs[i];
+      if (!fill || !maskRef) return;
+      const done = Number(gsap.getProperty(pen, "strokeDashoffset")) <= 0.5;
+      if (done === fill.hasAttribute("mask")) {
+        if (done) fill.removeAttribute("mask");
+        else fill.setAttribute("mask", maskRef);
+      }
+    });
+  };
+
   const draw = gsap.timeline({
+    onUpdate: syncMasks,
     scrollTrigger: {
       trigger: pinWrap,
       start: () =>
@@ -140,28 +165,15 @@ export function initHowItWorks(track: HTMLElement) {
     },
   });
 
-  strokes.forEach((path, i) => {
-    // Once a stroke is down, drop its mask so the finished rocket is Figma's
-    // artwork exactly, not the pen's approximation of it.
-    const fill = path
-      .closest("g")
-      ?.querySelector<SVGPathElement>("[data-rocket-fill]");
-    const maskRef = fill?.getAttribute("mask") ?? null;
-
+  pens.forEach((pen, i) => {
     draw.to(
-      path,
-      {
-        strokeDashoffset: 0,
-        duration: 0.95,
-        ease: "power2.out",
-        onComplete: () => fill?.removeAttribute("mask"),
-        onReverseComplete: () => {
-          if (maskRef) fill?.setAttribute("mask", maskRef);
-        },
-      },
+      pen,
+      { strokeDashoffset: 0, duration: 0.95, ease: "power2.out" },
       i * 0.075,
     );
   });
+
+  syncMasks();
 
   return () => {
     dock.kill();
@@ -169,6 +181,10 @@ export function initHowItWorks(track: HTMLElement) {
     headline.kill();
     draw.scrollTrigger?.kill();
     draw.kill();
-    gsap.set(strokes, { clearProps: "strokeDasharray,strokeDashoffset" });
+    gsap.set(pens, { clearProps: "strokeDasharray,strokeDashoffset" });
+    fills.forEach((fill, i) => {
+      const maskRef = maskRefs[i];
+      if (fill && maskRef) fill.setAttribute("mask", maskRef);
+    });
   };
 }
