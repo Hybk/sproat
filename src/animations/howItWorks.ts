@@ -141,9 +141,24 @@ export function initHowItWorks(track: HTMLElement) {
   });
 
   strokes.forEach((path, i) => {
+    // Once a stroke is down, drop its mask so the finished rocket is Figma's
+    // artwork exactly, not the pen's approximation of it.
+    const fill = path
+      .closest("g")
+      ?.querySelector<SVGPathElement>("[data-rocket-fill]");
+    const maskRef = fill?.getAttribute("mask") ?? null;
+
     draw.to(
       path,
-      { strokeDashoffset: 0, duration: 0.95, ease: "power2.out" },
+      {
+        strokeDashoffset: 0,
+        duration: 0.95,
+        ease: "power2.out",
+        onComplete: () => fill?.removeAttribute("mask"),
+        onReverseComplete: () => {
+          if (maskRef) fill?.setAttribute("mask", maskRef);
+        },
+      },
       i * 0.075,
     );
   });
