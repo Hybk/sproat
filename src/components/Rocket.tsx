@@ -1,8 +1,10 @@
-import { rocketArt } from "@/animations/rocketArt";
+import { rocketStroke } from "@/animations/rocketStroke";
 
-const NO_FLAME_VIEWBOX = "0 0 580.593 858";
-const NO_FLAME_HEIGHT = 858;
-const FLAME_FROM = 20;
+// Pen order: body sides, then nose tip and its bands top-down, base, fins, ticks.
+const DRAW_ORDER = [
+  1, 0, 2, 19, 18, 17, 16, 15, 14, 13, 12, 11, 7, 8, 9, 10, 3, 4, 5, 6,
+];
+const FLAME = [20, 21];
 
 export function Rocket({
   className,
@@ -11,53 +13,36 @@ export function Rocket({
   className?: string;
   flame?: boolean;
 }) {
-  const paths = flame ? rocketArt.paths : rocketArt.paths.slice(0, FLAME_FROM);
-  const viewBox = flame ? rocketArt.viewBox : NO_FLAME_VIEWBOX;
-  const height = flame ? rocketArt.height : NO_FLAME_HEIGHT;
-  const width = rocketArt.width;
+  const order = flame ? [...DRAW_ORDER, ...FLAME] : DRAW_ORDER;
+  const byIndex = new Map<number, (typeof rocketStroke.paths)[number]>(
+    rocketStroke.paths.map((p) => [p.i, p]),
+  );
 
   return (
     <svg
-      viewBox={viewBox}
-      width={width}
-      height={height}
+      viewBox={rocketStroke.viewBox}
       fill="none"
       aria-hidden
       focusable="false"
       data-rocket
       className={className}
     >
-      <defs>
-        <mask
-          id="rocket-reveal"
-          maskUnits="userSpaceOnUse"
-          x={-width}
-          y={-height}
-          width={width * 3}
-          height={height * 3}
-        >
-          <rect
-            data-rocket-reveal
-            x={-width}
-            y={0}
-            width={width * 3}
-            height={height}
-            fill="white"
-          />
-        </mask>
-      </defs>
-      <g mask="url(#rocket-reveal)">
-        {paths.map((path, i) => (
+      {order.map((i, step) => {
+        const path = byIndex.get(i);
+        if (!path) return null;
+        return (
           <path
             key={i}
-            data-rocket-part={i}
+            data-rocket-part={step}
             d={path.d}
-            fill={path.fill}
-            stroke={"stroke" in path ? path.stroke : undefined}
-            strokeWidth={"strokeWidth" in path ? path.strokeWidth : undefined}
+            fill="none"
+            stroke={path.c}
+            strokeWidth={path.w}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
-        ))}
-      </g>
+        );
+      })}
     </svg>
   );
 }

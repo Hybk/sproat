@@ -13,11 +13,13 @@ export function initHowItWorks(track: HTMLElement) {
   const slot = track.querySelector<HTMLElement>("[data-phone-slot]");
   const phone = track.querySelector<HTMLElement>("[data-phone]");
   const pinWrap = track.querySelector<HTMLElement>("[data-pin-wrap]");
-  const section = track.querySelector<HTMLElement>("[data-hiw-pending]");
   const rocketRun = track.querySelector<HTMLElement>("[data-rocket-run]");
-  const reveal = track.querySelector<SVGRectElement>("[data-rocket-reveal]");
+  const section = track.querySelector<HTMLElement>("[data-hiw-pending]");
+  const strokes = Array.from(
+    track.querySelectorAll<SVGPathElement>("[data-rocket-part]"),
+  );
 
-  if (!anchor || !slot || !phone || !pinWrap || !rocketRun || !reveal) {
+  if (!anchor || !slot || !phone || !pinWrap || !rocketRun || !strokes.length) {
     return () => {};
   }
 
@@ -29,14 +31,14 @@ export function initHowItWorks(track: HTMLElement) {
     return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, w: r.width };
   };
 
-  let pSettle = 0.35;
+  let pSettle = SETTLE;
 
   const placePhone = (progress: number) => {
     const docked = boxOf(slot);
     const from = boxOf(anchor);
     if (!docked.w || !from.w) return;
-    const t = easeOut(gsap.utils.clamp(0, 1, progress / pSettle));
 
+    const t = easeOut(gsap.utils.clamp(0, 1, progress / pSettle));
     gsap.set(phone, {
       x: lerp(from.cx, docked.cx, t) - docked.cx,
       y: lerp(from.cy, docked.cy, t) - docked.cy,
@@ -58,7 +60,7 @@ export function initHowItWorks(track: HTMLElement) {
       pSettle =
         total > 0
           ? gsap.utils.clamp(0.05, 0.95, (settleAt - self.start) / total)
-          : 0.35;
+          : SETTLE;
       placePhone(self.progress);
     },
     onUpdate: (self) => placePhone(self.progress),
@@ -120,24 +122,31 @@ export function initHowItWorks(track: HTMLElement) {
     onLeaveBack: () => headline.reverse(),
   });
 
-  // Starts once the unpinned heading has scrolled clear, and ends with the track,
+  // Drawn stroke by stroke in pen order, the way you would sketch it. Runs from
+  // the point the unpinned heading has scrolled clear to the end of the track,
   // which is exactly when the sticky rocket + phone stop sticking.
-  const revealHeight = Number(reveal.getAttribute("height"));
-  const draw = gsap.fromTo(
-    reveal,
-    { y: -revealHeight },
-    {
-      y: 0,
-      ease: "none",
-      scrollTrigger: {
-        trigger: pinWrap,
-        start: () =>
-          `top top-=${pinDistance() + rocketRun.offsetHeight * ROCKET_LEAD}`,
-        end: () => `top top-=${pinDistance() + rocketRun.offsetHeight}`,
-        scrub: true,
-      },
+  strokes.forEach((path) => {
+    const len = path.getTotalLength();
+    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+  });
+
+  const draw = gsap.timeline({
+    scrollTrigger: {
+      trigger: pinWrap,
+      start: () =>
+        `top top-=${pinDistance() + rocketRun.offsetHeight * ROCKET_LEAD}`,
+      end: () => `top top-=${pinDistance() + rocketRun.offsetHeight}`,
+      scrub: true,
     },
-  );
+  });
+
+  strokes.forEach((path, i) => {
+    draw.to(
+      path,
+      { strokeDashoffset: 0, duration: 0.95, ease: "power2.out" },
+      i * 0.075,
+    );
+  });
 
   return () => {
     dock.kill();
@@ -145,5 +154,6 @@ export function initHowItWorks(track: HTMLElement) {
     headline.kill();
     draw.scrollTrigger?.kill();
     draw.kill();
+    gsap.set(strokes, { clearProps: "strokeDasharray,strokeDashoffset" });
   };
 }
