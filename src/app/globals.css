@@ -55,7 +55,12 @@
 
 @layer base {
   [data-intro="pending"] [data-anim],
-  [data-intro="pending"] [data-char] {
+  [data-intro="pending"] [data-hero] [data-char] {
+    opacity: 0;
+  }
+
+  [data-hiw-pending] [data-hiw-anim],
+  [data-hiw-pending] [data-char] {
     opacity: 0;
   }
 

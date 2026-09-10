@@ -5,7 +5,9 @@ import { gsap } from "@/animations/gsap";
 const CHAR_STAGGER = 0.028;
 
 export function playHeroIntro(root: HTMLElement) {
-  const q = gsap.utils.selector(root);
+  const heroEl = root.querySelector<HTMLElement>("[data-hero]") ?? root;
+  const q = gsap.utils.selector(heroEl);
+  const qRoot = gsap.utils.selector(root);
   const chars = q("[data-char]");
   const reveals = q("[data-doodle-reveal]");
 
@@ -139,7 +141,7 @@ export function playHeroIntro(root: HTMLElement) {
   );
 
   tl.from(
-    q("[data-anim='phone']"),
+    qRoot("[data-anim='phone']"),
     {
       opacity: 0,
       yPercent: 22,

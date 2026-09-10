@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Doodle } from "@/components/Doodle";
+import { SplitWord } from "@/components/SplitWord";
 import { WaitlistButton } from "@/components/WaitlistButton";
 
 const MONEY_CHIP = "/images/curved-stack-money-icon-3d-illustration.png";
@@ -47,18 +48,6 @@ const doodles = [
   },
 ] as const;
 
-function SplitWord({ text, className }: { text: string; className: string }) {
-  return (
-    <span className={className} aria-label={text}>
-      {[...text].map((char, i) => (
-        <span key={i} aria-hidden data-char className="inline-block">
-          {char}
-        </span>
-      ))}
-    </span>
-  );
-}
-
 function Chip({ src, art }: { src: string; art: string }) {
   return (
     <span
@@ -74,7 +63,10 @@ function Chip({ src, art }: { src: string; art: string }) {
 
 export function Hero() {
   return (
-    <section className="relative flex h-[calc(100svh-76px)] flex-col items-center overflow-x-clip font-[Manrope,sans-serif] text-white">
+    <section
+      data-hero
+      className="relative flex h-[calc(100svh-76px)] flex-col items-center overflow-x-clip font-[Manrope,sans-serif] text-white"
+    >
       <noscript>
         <style>{`[data-intro="pending"] [data-anim],[data-intro="pending"] [data-char]{opacity:1}`}</style>
       </noscript>
@@ -128,7 +120,7 @@ export function Hero() {
 
       <div className="flex-[1]" />
 
-      <div className="relative z-10 flex w-full flex-col items-center px-6 text-center">
+      <div className="relative z-20 flex w-full flex-col items-center px-6 text-center">
         <span
           data-anim="pill"
           className="rounded-full border border-white/20 bg-white/15 px-[13px] py-[4px] text-[clamp(0.6875rem,0.764vw,1rem)] leading-[1.45] font-bold"

@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Rocket } from "@/components/Rocket";
 import { Hero } from "@/components/sections/Hero";
 import { HeroIntro } from "@/components/sections/HeroIntro";
 import { HowItWorks } from "@/components/sections/HowItWorks";
@@ -13,7 +14,9 @@ export default function Home() {
           <div data-track className="relative">
             <Hero />
             <HowItWorks />
-            <StickyPhone trackRef="[data-track]" />
+            <StickyPhone trackRef="[data-track]">
+              <Rocket className="h-full w-full" />
+            </StickyPhone>
           </div>
         </HeroIntro>
       </main>

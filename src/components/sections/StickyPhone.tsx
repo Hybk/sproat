@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 import { gsap } from "@/animations/gsap";
 import { initHowItWorks } from "@/animations/howItWorks";
+import { PHONE_SLOT, STAGE } from "@/components/sections/stage";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-const SLOT = "absolute top-[25.667%] left-[24.637%] h-[70.513%] w-[50.407%]";
-
-export function StickyPhone({ trackRef }: { trackRef: string }) {
+export function StickyPhone({
+  trackRef,
+  children,
+}: {
+  trackRef: string;
+  children: ReactNode;
+}) {
   const mounted = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -35,9 +40,10 @@ export function StickyPhone({ trackRef }: { trackRef: string }) {
       className="pointer-events-none absolute inset-0"
     >
       <div className="sticky top-0 h-svh">
-        <div className="absolute top-1/2 left-1/2 aspect-[0.6767] h-[83.25svh] -translate-x-1/2 -translate-y-1/2">
-          <span data-phone-slot className={`${SLOT} invisible`} />
-          <span data-phone className={SLOT}>
+        <div data-stage-slot className={STAGE}>
+          {children}
+          <span data-phone-slot className={`${PHONE_SLOT} invisible`} />
+          <span data-phone className={PHONE_SLOT}>
             <span data-anim="phone" className="relative block h-full w-full">
               <Image
                 src="/iphone 1 big.png"
