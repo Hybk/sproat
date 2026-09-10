@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 
+import { Header } from "@/components/Header";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Spraot",
+  title: "Sproat",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body>
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <Header />
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );
