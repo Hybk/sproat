@@ -4,29 +4,67 @@ import Link from "next/link";
 import { WaitlistButton } from "@/components/WaitlistButton";
 
 const doodles = [
-  { src: "/doodles/Vector-3.png", w: 304, h: 367, position: "left-[7.5%] top-[19%] w-[5%]", sizes: "5vw" },
-  { src: "/doodles/Vector.png", w: 250, h: 189, position: "left-[10%] top-[45%] w-[5%]", sizes: "5vw" },
-  { src: "/doodles/Group 31.png", w: 730, h: 731, position: "left-[22%] top-[56%] w-[11%]", sizes: "11vw" },
-  { src: "/doodles/Group 17.png", w: 809, h: 1080, position: "left-[0.5%] top-[70%] w-[13.5%]", sizes: "14vw" },
-  { src: "/doodles/Group 33.png", w: 344, h: 336, position: "left-[68.5%] top-[8%] w-[6%]", sizes: "6vw" },
-  { src: "/doodles/Vector-2.png", w: 403, h: 370, position: "left-[84.5%] top-[33%] w-[7.5%]", sizes: "8vw" },
-  { src: "/doodles/Vector-1.png", w: 745, h: 685, position: "left-[64%] top-[67%] w-[10.5%]", sizes: "11vw" },
+  {
+    src: "/doodles/Vector-3.png",
+    w: 304,
+    h: 367,
+    position: "left-[7.5%] top-[19%] w-[5%]",
+    sizes: "5vw",
+  },
+  {
+    src: "/doodles/Vector.png",
+    w: 250,
+    h: 189,
+    position: "left-[10%] top-[45%] w-[5%]",
+    sizes: "5vw",
+  },
+  {
+    src: "/doodles/Group 31.png",
+    w: 730,
+    h: 731,
+    position: "left-[22%] top-[56%] w-[11%]",
+    sizes: "11vw",
+  },
+  {
+    src: "/doodles/Group 17.png",
+    w: 809,
+    h: 1080,
+    position: "left-[0.5%] top-[70%] w-[13.5%]",
+    sizes: "14vw",
+  },
+  {
+    src: "/doodles/Group 33.png",
+    w: 344,
+    h: 336,
+    position: "left-[68.5%] top-[8%] w-[6%]",
+    sizes: "6vw",
+  },
+  {
+    src: "/doodles/Vector-2.png",
+    w: 403,
+    h: 370,
+    position: "left-[84.5%] top-[33%] w-[7.5%]",
+    sizes: "8vw",
+  },
+  {
+    src: "/doodles/Vector-1.png",
+    w: 745,
+    h: 685,
+    position: "left-[64%] top-[67%] w-[10.5%]",
+    sizes: "11vw",
+  },
 ];
 
 const MONEY_CHIP = "/images/curved-stack-money-icon-3d-illustration.png";
 const CARD_CHIP =
   "/images/clicking-remote-control-device-cartoon-character-hand-illustration-pressing-buttons-tv-remote-controller-2d-vector-image-isolated-white-background-change-channels-editable-flat-clipart-color.png";
 
-function Chip({ src, zoom }: { src: string; zoom: string }) {
+function Chip({ src, art }: { src: string; art: string }) {
   return (
-    <span className="relative inline-block h-[1.05em] w-[1.55em] overflow-hidden rounded-full bg-[#EDEDED] align-middle">
-      <Image
-        src={src}
-        alt=""
-        fill
-        sizes="12vw"
-        className={`object-cover ${zoom}`}
-      />
+    <span className="relative inline-block h-[1.05em] w-[1.745em] overflow-hidden rounded-full bg-[#E6E6E9] align-middle shadow-[inset_0_0.057em_0.148em_-0.043em_rgba(0,0,0,0.16)]">
+      <span className={`absolute ${art}`}>
+        <Image src={src} alt="" fill sizes="14vw" className="object-cover" />
+      </span>
     </span>
   );
 }
@@ -34,7 +72,10 @@ function Chip({ src, zoom }: { src: string; zoom: string }) {
 export function Hero() {
   return (
     <section className="relative flex flex-1 flex-col items-center font-[Manrope,sans-serif] text-white">
-      <div aria-hidden className="pointer-events-none absolute inset-0 select-none">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 select-none"
+      >
         <Image
           src="/images/laptop-white-background-isolated-top-view 1.png"
           alt=""
@@ -77,11 +118,19 @@ export function Hero() {
           <span className="block whitespace-nowrap">
             <span className="text-[#396FD5]">Their</span>{" "}
             <span className="text-[#EDEDED]">first</span>{" "}
-            <span className="text-[#E9E51F]">real</span> <Chip src={MONEY_CHIP} zoom="scale-[1.25] rotate-[-20deg]" />{" "}
+            <span className="text-[#E9E51F]">real</span>{" "}
+            <Chip
+              src={MONEY_CHIP}
+              art="left-[41.59%] top-[99.6%] h-[198.64%] w-[135.27%] -translate-x-1/2 -translate-y-1/2 rotate-[-32.52deg]"
+            />{" "}
             <span className="text-[#8B7CF6]">money.</span>
           </span>
           <span className="block whitespace-nowrap">
-            <span className="text-[#F81CB0]">Your</span> <Chip src={CARD_CHIP} zoom="scale-[1.15] rotate-[-16deg]" />{" "}
+            <span className="text-[#F81CB0]">Your</span>{" "}
+            <Chip
+              src={CARD_CHIP}
+              art="left-[9.35%] top-[-22%] h-[203.33%] w-[123.98%]"
+            />{" "}
             <span className="text-[#EDEDED]">rules</span>
           </span>
         </h1>
