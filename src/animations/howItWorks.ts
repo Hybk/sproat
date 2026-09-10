@@ -4,6 +4,8 @@ import { gsap, ScrollTrigger } from "@/animations/gsap";
 
 const SETTLE = 0.5;
 const ROCKET_LEAD = 0.3;
+const PEN_STAGGER = 0.075;
+const PEN_DURATION = 0.95;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
@@ -122,40 +124,16 @@ export function initHowItWorks(track: HTMLElement) {
     onLeaveBack: () => headline.reverse(),
   });
 
-  // Only the pens carry the dash, and every pen lives inside a mask, so no
-  // dash cap or endpoint can ever paint onto the page. Runs from the point the
-  // unpinned heading has scrolled clear to the end of the track, which is
-  // exactly when the sticky rocket + phone stop sticking.
+  // Only the pens carry the dash, and every pen sits inside a mask, so no dash
+  // cap or endpoint can paint onto the page. Runs from the point the unpinned
+  // heading has scrolled clear to the end of the track, which is exactly when
+  // the sticky rocket + phone stop sticking.
   pens.forEach((pen) => {
     const len = pen.getTotalLength();
     gsap.set(pen, { strokeDasharray: len, strokeDashoffset: len });
   });
 
-  // A pen only approximates the very tips of its stroke, so once a stroke is
-  // fully down its mask comes off and Figma's path shows untouched. Driven off
-  // the timeline each frame rather than onComplete, which scrubbing can skip.
-  const fills = pens.map(
-    (pen) =>
-      pen.closest("g")?.querySelector<SVGPathElement>("[data-rocket-fill]") ??
-      null,
-  );
-  const maskRefs = fills.map((fill) => fill?.getAttribute("mask") ?? null);
-
-  const syncMasks = () => {
-    pens.forEach((pen, i) => {
-      const fill = fills[i];
-      const maskRef = maskRefs[i];
-      if (!fill || !maskRef) return;
-      const done = Number(gsap.getProperty(pen, "strokeDashoffset")) <= 0.5;
-      if (done === fill.hasAttribute("mask")) {
-        if (done) fill.removeAttribute("mask");
-        else fill.setAttribute("mask", maskRef);
-      }
-    });
-  };
-
   const draw = gsap.timeline({
-    onUpdate: syncMasks,
     scrollTrigger: {
       trigger: pinWrap,
       start: () =>
@@ -168,11 +146,35 @@ export function initHowItWorks(track: HTMLElement) {
   pens.forEach((pen, i) => {
     draw.to(
       pen,
-      { strokeDashoffset: 0, duration: 0.95, ease: "power2.out" },
-      i * 0.075,
+      { strokeDashoffset: 0, duration: PEN_DURATION, ease: "power2.out" },
+      i * PEN_STAGGER,
     );
   });
 
+  // A pen only approximates the very tips of its stroke, so once a stroke is
+  // fully down its mask comes off and Figma's path shows untouched. Decided
+  // from the timeline's own time — reading the dash back off an SVG element is
+  // unreliable, and per-tween callbacks get skipped while scrubbing.
+  const fills = pens.map(
+    (pen) =>
+      pen.closest("g")?.querySelector<SVGPathElement>("[data-rocket-fill]") ??
+      null,
+  );
+  const maskRefs = fills.map((fill) => fill?.getAttribute("mask") ?? null);
+
+  const syncMasks = () => {
+    const time = draw.time();
+    pens.forEach((_, i) => {
+      const fill = fills[i];
+      const maskRef = maskRefs[i];
+      if (!fill || !maskRef) return;
+      const done = time >= i * PEN_STAGGER + PEN_DURATION;
+      if (done) fill.removeAttribute("mask");
+      else if (!fill.hasAttribute("mask")) fill.setAttribute("mask", maskRef);
+    });
+  };
+
+  draw.eventCallback("onUpdate", syncMasks);
   syncMasks();
 
   return () => {
