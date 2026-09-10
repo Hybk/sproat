@@ -73,15 +73,15 @@ export function Hero() {
           Backed by Y Combinator
         </span>
 
-        <h1 className="mt-4 font-['Shooting_Star'] text-[clamp(1.55rem,5.35vw,7rem)] leading-[1.12] font-normal">
+        <h1 className="mt-4 font-['Shooting_Star'] text-[clamp(1.55rem,5.35vw,7rem)] leading-[1.12] [word-spacing:-0.12em] font-normal">
           <span className="block whitespace-nowrap">
             <span className="text-[#396FD5]">Their</span>{" "}
             <span className="text-[#EDEDED]">first</span>{" "}
-            <span className="text-[#E9E51F]">real</span> <Chip src={MONEY_CHIP} zoom="scale-[1.15]" />{" "}
+            <span className="text-[#E9E51F]">real</span> <Chip src={MONEY_CHIP} zoom="scale-[1.25] rotate-[-20deg]" />{" "}
             <span className="text-[#8B7CF6]">money.</span>
           </span>
           <span className="block whitespace-nowrap">
-            <span className="text-[#F81CB0]">Your</span> <Chip src={CARD_CHIP} zoom="scale-[1.18]" />{" "}
+            <span className="text-[#F81CB0]">Your</span> <Chip src={CARD_CHIP} zoom="scale-[1.15] rotate-[-16deg]" />{" "}
             <span className="text-[#EDEDED]">rules</span>
           </span>
         </h1>
