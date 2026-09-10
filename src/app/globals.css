@@ -5,7 +5,7 @@
   font-family: "Shooting Star";
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
   src: url("/fonts/Shooting%20Star.ttf") format("truetype");
 }
 
@@ -54,6 +54,11 @@
 }
 
 @layer base {
+  [data-intro="pending"] [data-anim],
+  [data-intro="pending"] [data-char] {
+    opacity: 0;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: auto;
