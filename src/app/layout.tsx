@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { Header } from "@/components/Header";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
 
@@ -12,10 +11,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body>
-        <SmoothScroll>
-          <Header />
-          {children}
-        </SmoothScroll>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );
